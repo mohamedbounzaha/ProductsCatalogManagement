@@ -1,6 +1,6 @@
-﻿using FluentValidation;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using ProductsCatalogManagement.Api.Contracts;
 using ProductsCatalogManagement.Api.Extensions;
 using ProductsCatalogManagement.Application.Dtos;
@@ -17,12 +17,12 @@ namespace ProductsCatalogManagement.Api.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productAppService;
-        private readonly IValidator<ProductDto> _productValidator;
+        private readonly ILogger<ProductController> _logger;
 
-        public ProductController(IProductService productAppService, IValidator<ProductDto> productValidator)
+        public ProductController(IProductService productAppService, ILogger<ProductController> logger)
         {
             _productAppService = productAppService ?? throw new ArgumentNullException(nameof(productAppService));
-            _productValidator = productValidator ?? throw new ArgumentNullException(nameof(productAppService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         [HttpGet]
@@ -49,12 +49,11 @@ namespace ProductsCatalogManagement.Api.Controllers
             catch (ArgumentNullException argumentNullException)
             {
                 var apiErrorException = argumentNullException.CreateApiErrorException(StatusCodes.Status400BadRequest);
-                // TODO ADD Logger
                 return new BadRequestObjectResult(apiErrorException);
             }
             catch (Exception exception)
             {
-                // TODO ADD Logger
+                _logger.LogError($"{nameof(CreateProduct)}" + "@{ex}", exception);
                 return null;
             }
         }
