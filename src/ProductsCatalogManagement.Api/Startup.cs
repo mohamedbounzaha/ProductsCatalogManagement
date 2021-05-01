@@ -1,15 +1,14 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using ProductsCatalogManagement.Application;
+using ProductsCatalogManagement.Application.Dtos;
+using ProductsCatalogManagement.Core.Configuration;
+using ProductsCatalogManagement.Infrastructure;
 
 namespace ProductsCatalogManagement.Api
 {
@@ -27,18 +26,21 @@ namespace ProductsCatalogManagement.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            ConfigureProductsCatalogManagementServices(services);
+
+            services.AddControllers()
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<ProductDtoValidator>());
 
             services.AddCors(options =>
-            {
-                options.AddPolicy(AllowAllCors,
-                                  builder =>
-                                  {
-                                      builder.AllowAnyHeader();
-                                      builder.AllowAnyMethod();
-                                      builder.AllowAnyOrigin();
-                                  });
-            });
+                {
+                    options.AddPolicy(AllowAllCors,
+                                      builder =>
+                                      {
+                                          builder.AllowAnyHeader();
+                                          builder.AllowAnyMethod();
+                                          builder.AllowAnyOrigin();
+                                      });
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,6 +69,24 @@ namespace ProductsCatalogManagement.Api
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private void ConfigureProductsCatalogManagementServices(IServiceCollection services)
+        {
+            services.AddSwaggerGen();
+            services.AddTransient<IValidator<ProductDto>, ProductDtoValidator>();
+
+            // Add Core Layer
+            services.Configure<ProductsCatalogManagementRunSettings>(Configuration);
+
+            // Add Infrastructure Layer
+            services.AddInfrastructure(Configuration);
+
+            // Add Application Layer
+            services.AddApplication();
+
+            // Add WebApi Layer
+            services.AddAutoMapper(typeof(Startup)); // Add AutoMapper
         }
     }
 }

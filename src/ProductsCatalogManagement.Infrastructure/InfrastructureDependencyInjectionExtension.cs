@@ -6,11 +6,6 @@ using ProductsCatalogManagement.Core.Repositories;
 using ProductsCatalogManagement.Core.Repositories.Base;
 using ProductsCatalogManagement.Infrastructure.Data;
 using ProductsCatalogManagement.Infrastructure.Repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ProductsCatalogManagement.Infrastructure
 {

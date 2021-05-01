@@ -1,8 +1,5 @@
-﻿using ProductsCatalogManagement.Core.Entities;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.EntityFrameworkCore;
+using ProductsCatalogManagement.Core.Entities;
 
 namespace ProductsCatalogManagement.Infrastructure.Data
 {
